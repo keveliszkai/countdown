@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title id="timer-title"></title>
+    <title id="timer-title">T-?</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
 
     <style>
       body {
@@ -12,6 +13,7 @@
         justify-items: center;
         background-color: #222;
         font-family: monospace;
+        margin: 0;
       }
       div.content {
         display: flex;
@@ -36,17 +38,13 @@
   </head>
   <body>
     <div class="content">
-      <h1 id="timer"></h1>
+      <h1 id="timer">T-?</h1>
       <h2 id="sec"></h2>
     </div>
 
     <script>
       const url = new URL(window.location.href);
       const targetDate = new Date();
-
-      targetDate.setHours(url.searchParams.get("hours"));
-      targetDate.setMinutes(url.searchParams.get("minutes"));
-      targetDate.setSeconds(0);
 
       function writeValue(id, value) {
         const el = document.getElementById(id);
@@ -56,23 +54,29 @@
         }
       }
 
-      setInterval(() => {
-        const differenceInMs = +new Date() - +targetDate;
+      if (url.searchParams.get("hours") && url.searchParams.get("minutes")) {
+        targetDate.setHours(url.searchParams.get("hours"));
+        targetDate.setMinutes(url.searchParams.get("minutes"));
+        targetDate.setSeconds(0);
 
-        const differenceInSec = differenceInMs / 1000;
-        const differenceInMin = Math.floor(differenceInSec / 60);
-        const isExpired = differenceInMin >= 0;
+        setInterval(() => {
+          const differenceInMs = +new Date() - +targetDate;
 
-        const text = `T${isExpired ? "+" : "-"}${Math.abs(differenceInMin)}`;
-        const textSec = Math.abs(Math.floor(differenceInSec % 60));
+          const differenceInSec = differenceInMs / 1000;
+          const differenceInMin = Math.floor(differenceInSec / 60);
+          const isExpired = differenceInMin >= 0;
 
-        writeValue("timer", text);
-        writeValue("timer-title", text);
-        writeValue("sec", textSec);
+          const text = `T${isExpired ? "+" : "-"}${Math.abs(differenceInMin)}`;
+          const textSec = Math.abs(Math.floor(differenceInSec % 60));
 
-        document.getElementsByTagName("body")[0].style.backgroundColor =
-          isExpired && textSec % 2 ? "red" : "#222";
-      }, 250);
+          writeValue("timer", text);
+          writeValue("timer-title", text);
+          writeValue("sec", textSec);
+
+          document.getElementsByTagName("body")[0].style.backgroundColor =
+            isExpired && textSec % 2 ? "red" : "#222";
+        }, 250);
+      }
     </script>
   </body>
 </html>
